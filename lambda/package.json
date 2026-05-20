@@ -1,0 +1,13 @@
+{
+  "name": "trailhead-lambda",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "main": "index.mjs",
+  "scripts": {
+    "zip": "node ./scripts/build-zip.mjs"
+  },
+  "dependencies": {
+    "openai": "^4.86.1"
+  }
+}
