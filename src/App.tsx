@@ -1,25 +1,27 @@
 import { useState } from 'react';
 import { Header } from './components/Header';
+import { ContactForm } from './components/ContactForm';
 import { IntakeForm } from './components/IntakeForm';
 import { ConversationView } from './components/ConversationView';
 import { EmailPreview } from './components/EmailPreview';
 import { callTrailhead } from './lib/api';
-import type { ComposedEmail, Turn } from './lib/types';
+import type { ComposedEmail, GuestProfile, Turn } from './lib/types';
 
 type Phase = 'idle' | 'awaiting-guest' | 'loading' | 'composed' | 'error';
 
 export default function App() {
+  const [guest, setGuest] = useState<GuestProfile | null>(null);
   const [turns, setTurns] = useState<Turn[]>([]);
   const [phase, setPhase] = useState<Phase>('idle');
   const [email, setEmail] = useState<ComposedEmail | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [regeneratingIndex, setRegeneratingIndex] = useState<number | null>(null);
 
-  const advance = async (nextTurns: Turn[]) => {
+  const advance = async (g: GuestProfile, nextTurns: Turn[]) => {
     setPhase('loading');
     setError(null);
     try {
-      const res = await callTrailhead(nextTurns, 'next');
+      const res = await callTrailhead(g, nextTurns, 'next');
       if (res.type === 'question') {
         setTurns([...nextTurns, { role: 'assistant', question: res.question }]);
         setPhase('awaiting-guest');
@@ -33,18 +35,27 @@ export default function App() {
     }
   };
 
-  const onGuestSubmit = (text: string) => {
+  const onContactSubmit = (g: GuestProfile, text: string) => {
+    setGuest(g);
+    const nextTurns: Turn[] = [{ role: 'guest', text }];
+    setTurns(nextTurns);
+    void advance(g, nextTurns);
+  };
+
+  const onFollowupSubmit = (text: string) => {
+    if (!guest) return;
     const nextTurns: Turn[] = [...turns, { role: 'guest', text }];
     setTurns(nextTurns);
-    void advance(nextTurns);
+    void advance(guest, nextTurns);
   };
 
   const onRegenerate = async (assistantIdx: number) => {
+    if (!guest) return;
     setRegeneratingIndex(assistantIdx);
     setError(null);
     try {
       const historyUpToQuestion = turns.slice(0, assistantIdx);
-      const res = await callTrailhead(historyUpToQuestion, 'regenerate_question');
+      const res = await callTrailhead(guest, historyUpToQuestion, 'regenerate_question');
       if (res.type === 'question') {
         const updated = [...turns];
         updated[assistantIdx] = { role: 'assistant', question: res.question };
@@ -58,6 +69,7 @@ export default function App() {
   };
 
   const reset = () => {
+    setGuest(null);
     setTurns([]);
     setEmail(null);
     setPhase('idle');
@@ -65,6 +77,7 @@ export default function App() {
   };
 
   const inputDisabled = phase === 'loading';
+  const onInitialForm = phase === 'idle' && turns.length === 0;
 
   return (
     <div className="min-h-full bg-slate-50">
@@ -74,17 +87,20 @@ export default function App() {
         {phase !== 'composed' && (
           <div className="mb-8">
             <h1 className="text-2xl font-semibold tracking-tight text-ink-900">
-              Send a Contact Us message
+              {onInitialForm ? 'Contact us' : 'A few quick details'}
             </h1>
             <p className="mt-2 text-sm text-slate-600">
-              Type a question the way a guest would. Trailhead will ask smart follow-ups, then hand
-              your front desk a clean, routed request.
+              {onInitialForm
+                ? 'Tell us how we can help. Trailhead will ask any follow-up questions our team needs, then hand the front desk a clean, routed request.'
+                : 'Trailhead is gathering a couple more details so the resort team can help you faster.'}
             </p>
           </div>
         )}
 
         {phase === 'composed' && email ? (
           <EmailPreview email={email} onReset={reset} />
+        ) : onInitialForm ? (
+          <ContactForm disabled={inputDisabled} onSubmit={onContactSubmit} />
         ) : (
           <div className="space-y-5">
             <ConversationView
@@ -101,14 +117,10 @@ export default function App() {
             )}
 
             <IntakeForm
-              placeholder={
-                turns.length === 0
-                  ? "e.g. I'm wondering about ski lessons for my two kids next weekend."
-                  : 'Type your answer…'
-              }
-              submitLabel={turns.length === 0 ? 'Send to resort' : 'Send answer'}
+              placeholder="Type your answer…"
+              submitLabel="Send answer"
               disabled={inputDisabled}
-              onSubmit={onGuestSubmit}
+              onSubmit={onFollowupSubmit}
             />
 
             {error && (

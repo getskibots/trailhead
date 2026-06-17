@@ -1,4 +1,4 @@
-import type { LambdaResponse, Turn } from './types';
+import type { GuestProfile, LambdaResponse, Turn } from './types';
 
 const FOLLOWUPS_BY_TURN: string[] = [
   'Could you share the date or weekend you have in mind?',
@@ -22,10 +22,12 @@ const GUEST_TURNS = (history: Turn[]) =>
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export async function mockLambda(
+  guest: GuestProfile,
   history: Turn[],
   action: 'next' | 'regenerate_question',
 ): Promise<LambdaResponse> {
   await sleep(700);
+  void guest;
 
   const assistantCount = ASSISTANT_TURNS(history);
   const guestCount = GUEST_TURNS(history);

@@ -1,4 +1,4 @@
-import type { LambdaRequest, LambdaResponse, Turn } from './types';
+import type { GuestProfile, LambdaRequest, LambdaResponse, Turn } from './types';
 import { mockLambda } from './mock';
 
 const API_URL = import.meta.env.VITE_TRAILHEAD_API_URL as string | undefined;
@@ -10,14 +10,15 @@ const useMock = () => {
 };
 
 export async function callTrailhead(
+  guest: GuestProfile,
   conversationHistory: Turn[],
   action: 'next' | 'regenerate_question' = 'next',
 ): Promise<LambdaResponse> {
   if (useMock()) {
-    return mockLambda(conversationHistory, action);
+    return mockLambda(guest, conversationHistory, action);
   }
 
-  const body: LambdaRequest = { conversationHistory, action };
+  const body: LambdaRequest = { guest, conversationHistory, action };
   const res = await fetch(API_URL!, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

@@ -1,3 +1,9 @@
+export type GuestProfile = {
+  firstName: string;
+  lastName: string;
+  email: string;
+};
+
 export type Turn =
   | { role: 'guest'; text: string }
   | { role: 'assistant'; question: string };
@@ -25,6 +31,7 @@ export type LambdaResponse =
 export type LambdaAction = 'next' | 'regenerate_question';
 
 export type LambdaRequest = {
+  guest: GuestProfile;
   conversationHistory: Turn[];
   action?: LambdaAction;
 };
