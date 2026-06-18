@@ -1,13 +1,15 @@
 /**
  * Page metadata fetcher. Pulls <title>, <meta name="description">, and the
- * first ~500 chars of visible text for each URL. Throttled (200ms between
- * requests) and error-tolerant: a non-200 or thrown fetch is recorded, not
- * fatal, so one bad page doesn't sink a run.
+ * first ~500 chars of visible text for each URL. Fetched via a bounded worker
+ * pool (good-citizen concurrency + a small per-worker stagger) and
+ * error-tolerant: a non-200 or thrown fetch is recorded, not fatal, so one bad
+ * page doesn't sink a run.
  */
 import { browserHeaders, fetchWithTimeout, sleep } from "./http";
 import type { PageMeta } from "./types";
 
-const THROTTLE_MS = 200;
+const CONCURRENCY = 8; // simultaneous in-flight fetches
+const THROTTLE_MS = 150; // per-worker stagger between its requests
 const TEXT_PREVIEW_LEN = 500;
 
 function extractTitle(html: string): string {
@@ -71,14 +73,25 @@ async function fetchOne(url: string): Promise<PageMeta> {
 }
 
 /**
- * Fetch metadata for a list of URLs, sequentially and throttled. Returns one
- * PageMeta per input URL (including failures, with status 0 or the error code).
+ * Fetch metadata for a list of URLs using a bounded worker pool. Returns one
+ * PageMeta per input URL (in input order), including failures (status 0 or the
+ * error code). Concurrency keeps a large sitemap from taking many minutes while
+ * a small per-fetch stagger keeps us from hammering one host all at once.
  */
 export async function fetchPageMeta(urls: string[]): Promise<PageMeta[]> {
-  const out: PageMeta[] = [];
-  for (const url of urls) {
-    out.push(await fetchOne(url));
-    await sleep(THROTTLE_MS);
+  const out: PageMeta[] = new Array(urls.length);
+  let next = 0;
+
+  async function worker() {
+    while (true) {
+      const i = next++;
+      if (i >= urls.length) break;
+      out[i] = await fetchOne(urls[i]);
+      await sleep(THROTTLE_MS); // polite stagger per worker
+    }
   }
+
+  const workers = Array.from({ length: Math.min(CONCURRENCY, urls.length) }, worker);
+  await Promise.all(workers);
   return out;
 }
