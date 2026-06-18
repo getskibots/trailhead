@@ -1,0 +1,680 @@
+{
+  "id": "ski-resort",
+  "label": "Ski Resort",
+  "emoji": "🎿",
+  "version": "1.0",
+  "description": "Lift tickets, season passes, lessons, rentals, snow report, terrain, refunds, and on-mountain services.",
+  "flows": [
+    {
+      "key": "get_snow_report",
+      "label": "get_snow_report",
+      "enabled": true
+    },
+    {
+      "key": "get_lift_status",
+      "label": "get_lift_status",
+      "enabled": true
+    },
+    {
+      "key": "get_terrain_status",
+      "label": "get_terrain_status",
+      "enabled": false
+    },
+    {
+      "key": "get_weather",
+      "label": "get_weather",
+      "enabled": true
+    },
+    {
+      "key": "get_parking",
+      "label": "get_parking",
+      "enabled": true
+    },
+    {
+      "key": "get_events",
+      "label": "get_events",
+      "enabled": true
+    },
+    {
+      "key": "get_ecommerce",
+      "label": "get_ecommerce",
+      "enabled": false
+    }
+  ],
+  "knowledgeGroups": [
+    {
+      "id": "resort-info",
+      "emoji": "🏔️",
+      "label": "General Info",
+      "entries": [
+        {
+          "key": "hours",
+          "label": "Hours of operation",
+          "url": "",
+          "enabled": true
+        },
+        {
+          "key": "contact",
+          "label": "Contact",
+          "url": "",
+          "enabled": true
+        },
+        {
+          "key": "location",
+          "label": "Location",
+          "url": "",
+          "enabled": true
+        },
+        {
+          "key": "trail-maps",
+          "label": "Trail Maps & Slope Difficulty",
+          "url": "",
+          "enabled": true
+        },
+        {
+          "key": "terrain-status",
+          "label": "Terrain Status",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "snow-reports",
+          "label": "Snow Reports & Weather",
+          "url": "",
+          "enabled": true
+        },
+        {
+          "key": "webcams",
+          "label": "Live webcams",
+          "url": "",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": "tickets",
+      "emoji": "🎫",
+      "label": "Tickets",
+      "entries": [
+        {
+          "key": "lift-tickets",
+          "label": "Lift Tickets",
+          "url": "",
+          "enabled": true,
+          "notes": [
+            {
+              "id": "n1",
+              "type": "critical",
+              "text": "Never quote rates or prices. Direct guests to 855-679-7246 for pricing."
+            },
+            {
+              "id": "n2",
+              "type": "rule",
+              "text": "No single-ride tram or gondola tickets. Use date-based logic for the correct link."
+            },
+            {
+              "id": "n3",
+              "type": "script",
+              "text": "Ticket prices vary by date of visit and the best pricing is found online in advance of arrival."
+            }
+          ]
+        },
+        {
+          "key": "deals-packages",
+          "label": "Deals & Packages",
+          "url": "",
+          "enabled": false
+        }
+      ]
+    },
+    {
+      "id": "season-passes",
+      "emoji": "🎟️",
+      "label": "Season Passes",
+      "entries": [
+        {
+          "key": "types-of-passes",
+          "label": "Types of Season Passes",
+          "url": "",
+          "enabled": true,
+          "notes": [
+            {
+              "id": "sp1",
+              "type": "critical",
+              "text": "Winter 2026–2027 in-person sale concluded. Online sales begin May 13, 2026."
+            },
+            {
+              "id": "sp2",
+              "type": "rule",
+              "text": "Rates subject to change without notice; passes do sell out. No payment plans."
+            },
+            {
+              "id": "sp3",
+              "type": "script",
+              "text": "Different passes at Jackson Hole offer unique benefits. Visit our Season Pass page for full details."
+            }
+          ]
+        },
+        {
+          "key": "pass-sale-launch",
+          "label": "Sale Launch Date",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "tiered-pricing",
+          "label": "Tiered Pricing",
+          "url": "",
+          "enabled": false
+        }
+      ]
+    },
+    {
+      "id": "lessons",
+      "emoji": "🎿",
+      "label": "Ski & Snowboard Lessons",
+      "entries": [
+        {
+          "key": "adult-lessons",
+          "label": "Adult Lessons",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "kids-lessons",
+          "label": "Kids Lessons",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "private-lessons",
+          "label": "Private Lessons",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "group-lessons",
+          "label": "Group Lessons",
+          "url": "",
+          "enabled": false
+        }
+      ]
+    },
+    {
+      "id": "rentals",
+      "emoji": "🎿",
+      "label": "Ski & Snowboard Rentals",
+      "entries": [
+        {
+          "key": "ski-rentals",
+          "label": "Ski Rentals",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "snowboard-rentals",
+          "label": "Snowboard Rentals",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "demo-rentals",
+          "label": "Demo Rentals",
+          "url": "",
+          "enabled": false
+        }
+      ]
+    },
+    {
+      "id": "refund-policies",
+      "emoji": "📆",
+      "label": "Refund Policies",
+      "entries": [
+        {
+          "key": "refund-tickets",
+          "label": "Tickets",
+          "url": "",
+          "enabled": true,
+          "notes": [
+            {
+              "id": "rt1",
+              "type": "critical",
+              "text": "Day-of refunds only for full-mountain closures, not partial closures."
+            },
+            {
+              "id": "rt2",
+              "type": "rule",
+              "text": "24-hour cancellation window for online tickets."
+            },
+            {
+              "id": "rt3",
+              "type": "rule",
+              "text": "Day-of: non-refundable."
+            },
+            {
+              "id": "rt4",
+              "type": "script",
+              "text": "We can credit the ticket for a future visit if you cancel more than 24 hours out."
+            }
+          ]
+        },
+        {
+          "key": "refund-passes",
+          "label": "Passes",
+          "url": "",
+          "enabled": true,
+          "notes": [
+            {
+              "id": "rp1",
+              "type": "rule",
+              "text": "No refunds after season starts."
+            },
+            {
+              "id": "rp2",
+              "type": "rule",
+              "text": "Buy-back program available — see Guest Services on arrival."
+            }
+          ]
+        },
+        {
+          "key": "refund-lodging",
+          "label": "Lodging",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "refund-lessons-rentals",
+          "label": "Lessons & Rentals",
+          "url": "",
+          "enabled": false
+        }
+      ]
+    },
+    {
+      "id": "winter-activities",
+      "emoji": "⛷",
+      "label": "Additional Winter Activities",
+      "entries": [
+        {
+          "key": "alpine-skiing",
+          "label": "Alpine Skiing",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "snowboarding",
+          "label": "Snowboarding",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "terrain-parks",
+          "label": "Terrain Parks",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "night-skiing",
+          "label": "Night skiing",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "backcountry",
+          "label": "Backcountry",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "cat-skiing",
+          "label": "Cat Skiing",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "uphill-access",
+          "label": "Uphill Access",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "sledding",
+          "label": "Sledding",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "snowshoeing",
+          "label": "Snowshoeing",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "nordic-skiing",
+          "label": "Nordic Skiing",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "sleigh-rides",
+          "label": "Sleigh Rides",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "scenic-gondola",
+          "label": "Scenic Gondola Rides",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "ice-skating",
+          "label": "Ice Skating",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "winter-events",
+          "label": "Winter Events",
+          "url": "",
+          "enabled": false
+        }
+      ]
+    },
+    {
+      "id": "tubing",
+      "emoji": "🏂",
+      "label": "Tubing",
+      "entries": [
+        {
+          "key": "tubing-hours",
+          "label": "Hours",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "tubing-time-slots",
+          "label": "Time slots",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "tubing-pricing",
+          "label": "Pricing (static)",
+          "url": "",
+          "enabled": false
+        }
+      ]
+    },
+    {
+      "id": "summer-activities",
+      "emoji": "☀️",
+      "label": "Summer Activities",
+      "entries": [
+        {
+          "key": "hiking",
+          "label": "Hiking",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "biking",
+          "label": "Biking",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "zipline",
+          "label": "Zipline",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "summer-gondola",
+          "label": "Summer Gondola",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "disc-golf",
+          "label": "Disc Golf",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "kids-camps",
+          "label": "Kids Camps",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "yoga",
+          "label": "Yoga",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "summer-events",
+          "label": "Summer Events",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "golf",
+          "label": "Golf",
+          "url": "",
+          "enabled": false
+        }
+      ]
+    },
+    {
+      "id": "lodging",
+      "emoji": "🏨",
+      "label": "Lodging",
+      "entries": [
+        {
+          "key": "lodging-options",
+          "label": "Lodging Options",
+          "url": "",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": "dining",
+      "emoji": "🍽",
+      "label": "Dining & Après",
+      "entries": [
+        {
+          "key": "on-mountain-dining",
+          "label": "On-Mountain Dining",
+          "url": "",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": "guest-services",
+      "emoji": "🛎",
+      "label": "Guest Services & Safety",
+      "entries": [
+        {
+          "key": "faqs-lockers",
+          "label": "FAQs, Lockers, Lost & Found",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "emergency-safety",
+          "label": "Emergency & Safety Info",
+          "url": "",
+          "enabled": false
+        }
+      ]
+    },
+    {
+      "id": "parking-transit",
+      "emoji": "🚌",
+      "label": "Parking & Transit",
+      "entries": [
+        {
+          "key": "parking",
+          "label": "Parking",
+          "url": "",
+          "enabled": true
+        },
+        {
+          "key": "shuttles",
+          "label": "Shuttles",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "directions",
+          "label": "Directions",
+          "url": "",
+          "enabled": false
+        }
+      ]
+    },
+    {
+      "id": "events",
+      "emoji": "📅",
+      "label": "Events",
+      "entries": [
+        {
+          "key": "resort-events",
+          "label": "Resort Events & Activities",
+          "url": "",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": "pet-service-animals",
+      "emoji": "🐶",
+      "label": "Pet & Service Animals",
+      "entries": [
+        {
+          "key": "pet-policies",
+          "label": "Pet Policies & Lodging",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "service-animal",
+          "label": "Service Animal Guidelines",
+          "url": "",
+          "enabled": false
+        }
+      ]
+    },
+    {
+      "id": "packing-gear",
+      "emoji": "🎒",
+      "label": "Packing & Gear",
+      "entries": [
+        {
+          "key": "ski-gear-checklist",
+          "label": "Ski Gear Checklist",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "clothing-tips",
+          "label": "Clothing Tips & Rental Guidance",
+          "url": "",
+          "enabled": false
+        }
+      ]
+    },
+    {
+      "id": "employment",
+      "emoji": "💼",
+      "label": "Employment",
+      "entries": [
+        {
+          "key": "careers",
+          "label": "Careers / Job Openings",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "seasonal-positions",
+          "label": "Seasonal Positions (winter / summer)",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "internships",
+          "label": "Internships",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "employee-housing",
+          "label": "Employee Housing",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "employee-benefits",
+          "label": "Benefits & Employee Perks",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "how-to-apply",
+          "label": "How to Apply",
+          "url": "",
+          "enabled": false
+        }
+      ]
+    },
+    {
+      "id": "other",
+      "emoji": "🎉",
+      "label": "Other",
+      "entries": [
+        {
+          "key": "accessibility",
+          "label": "Accessibility Services",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "childcare-family",
+          "label": "Childcare & Family",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "health-wellness",
+          "label": "Health & Wellness",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "group-corporate",
+          "label": "Group & Corporate Events",
+          "url": "",
+          "enabled": false
+        },
+        {
+          "key": "backcountry-access",
+          "label": "Backcountry Access",
+          "url": "",
+          "enabled": false
+        }
+      ]
+    }
+  ],
+  "multiPass": {
+    "partners": [
+      { "key": "p-ikon", "label": "Ikon Pass", "url": "", "enabled": true, "notes": [] },
+      { "key": "p-mountain-collective", "label": "Mountain Collective", "url": "", "enabled": true, "notes": [] },
+      { "key": "p-indy", "label": "Indy Pass", "url": "", "enabled": false, "notes": [] }
+    ]
+  },
+  "usesEcommerceDoc": true
+}

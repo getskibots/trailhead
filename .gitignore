@@ -1,12 +1,14 @@
 # dependencies
-node_modules
+/node_modules
 .pnp
 .pnp.js
 
-# build
-dist
-dist-ssr
+# next.js
+/.next/
+/out/
+/build
 *.tsbuildinfo
+next-env.d.ts
 
 # logs
 npm-debug.log*
@@ -20,9 +22,6 @@ pnpm-debug.log*
 .idea
 .DS_Store
 *.suo
-*.ntvs*
-*.njsproj
-*.sln
 *.sw?
 
 # env
@@ -30,7 +29,8 @@ pnpm-debug.log*
 .env.local
 .env.*.local
 
-# lambda build artifacts
-lambda/node_modules
-lambda/function.zip
-lambda/dist
+# prototype run storage (filesystem-persisted CategorizationRuns)
+/data/runs/
+
+# vercel
+.vercel

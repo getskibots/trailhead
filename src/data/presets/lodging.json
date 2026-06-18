@@ -1,0 +1,96 @@
+{
+  "id": "lodging",
+  "label": "Hotel & Accommodations",
+  "emoji": "🏨",
+  "version": "1.0",
+  "example": true,
+  "description": "Rooms, rates, amenities, dining, policies, and local-area info for hotels & accommodations.",
+  "flows": [
+    { "key": "get_availability", "label": "get_availability", "enabled": true },
+    { "key": "get_rates", "label": "get_rates", "enabled": true },
+    { "key": "get_events", "label": "get_events", "enabled": false },
+    { "key": "get_ecommerce", "label": "get_ecommerce", "enabled": false }
+  ],
+  "knowledgeGroups": [
+    {
+      "id": "property-info",
+      "emoji": "🏨",
+      "label": "General Info",
+      "entries": [
+        { "key": "hours-front-desk", "label": "Front Desk Hours", "url": "", "enabled": true },
+        { "key": "contact", "label": "Contact", "url": "", "enabled": true },
+        { "key": "location", "label": "Location & Directions", "url": "", "enabled": true },
+        { "key": "check-in-out", "label": "Check-in / Check-out Times", "url": "", "enabled": true }
+      ]
+    },
+    {
+      "id": "rooms",
+      "emoji": "🛏️",
+      "label": "Rooms & Suites",
+      "entries": [
+        {
+          "key": "room-types",
+          "label": "Room Types",
+          "url": "",
+          "enabled": true,
+          "notes": [
+            { "id": "lr1", "type": "rule", "text": "Rates vary by date and occupancy; do not quote a price — direct guests to book online or call the front desk." }
+          ]
+        },
+        { "key": "suites", "label": "Suites", "url": "", "enabled": false },
+        { "key": "accessible-rooms", "label": "Accessible Rooms", "url": "", "enabled": false }
+      ]
+    },
+    {
+      "id": "amenities",
+      "emoji": "🧖",
+      "label": "Amenities & Spa",
+      "entries": [
+        { "key": "pool-hot-tub", "label": "Pool & Hot Tub", "url": "", "enabled": true },
+        { "key": "fitness", "label": "Fitness Center", "url": "", "enabled": false },
+        { "key": "spa", "label": "Spa Services", "url": "", "enabled": false },
+        { "key": "wifi", "label": "WiFi & Business Center", "url": "", "enabled": false }
+      ]
+    },
+    {
+      "id": "dining",
+      "emoji": "🍽",
+      "label": "Dining",
+      "entries": [
+        { "key": "on-site-dining", "label": "On-Site Restaurant", "url": "", "enabled": true },
+        { "key": "room-service", "label": "Room Service", "url": "", "enabled": false },
+        { "key": "breakfast", "label": "Breakfast", "url": "", "enabled": false }
+      ]
+    },
+    {
+      "id": "policies",
+      "emoji": "📋",
+      "label": "Booking & Policies",
+      "entries": [
+        {
+          "key": "cancellation",
+          "label": "Cancellation Policy",
+          "url": "",
+          "enabled": true,
+          "notes": [
+            { "id": "lp1", "type": "critical", "text": "Cancellation windows vary by rate type; non-refundable rates cannot be cancelled. Always confirm the rate booked before quoting a policy." }
+          ]
+        },
+        { "key": "deposit", "label": "Deposit & Payment", "url": "", "enabled": false },
+        { "key": "pet-policy", "label": "Pet Policy", "url": "", "enabled": false },
+        { "key": "parking", "label": "Parking", "url": "", "enabled": false }
+      ]
+    },
+    {
+      "id": "local-area",
+      "emoji": "🗺️",
+      "label": "Local Area",
+      "entries": [
+        { "key": "attractions", "label": "Nearby Attractions", "url": "", "enabled": false },
+        { "key": "transportation", "label": "Airport & Transportation", "url": "", "enabled": false }
+      ]
+    }
+  ],
+  "multiPass": { "partners": [] },
+  "usesEcommerceDoc": true
+}

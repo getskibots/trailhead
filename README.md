@@ -1,83 +1,102 @@
-# Trailhead for Email
+# 🥾 Trailhead
 
-> AI guest intake for ski resort Contact Us forms. Turns vague submissions into clear, routed, ready-to-answer requests.
+Internal GSB tool that auto-categorizes a ski resort's website URLs into our
+preset knowledge structure. Output is drop-in compatible with omni-odin's
+`applyPreset()`.
 
-A Get Ski Bots product. Live demo: <https://getskibots.github.io/trailhead/>
+Given a resort URL and a `KnowledgePreset`, Trailhead:
 
-## What it does
+1. **Detects the sitemap** — robots.txt → common paths → graceful fallback
+2. **Fetches page metadata** — title, meta description, visible-text preview (throttled, realistic headers)
+3. **Categorizes each URL with GPT** against the preset's *actual* `knowledgeGroups[].entries[]` and `multiPass.partners[]`
+4. **Health-checks** matched URLs (HTTP status + redirects)
+5. Produces a reviewable **`CategorizationRun`** and a downloadable **`PopulatedPreset`**
 
-Resort Contact Us pages get messy. A guest types "I'm wondering about ski lessons for my two kids next weekend" and a vague email lands in a generic inbox — no date, no ages, no ability level, no department routing. Staff round-trip three or four times to get the info they need to actually quote and book.
+Trailhead never invents categories — it populates the slots the preset already
+defines, and *proposes* new entries (flagged `proposed: true`, disabled) when
+something doesn't fit.
 
-Trailhead sits in front of the form. It:
+> ℹ️ This repo previously held "Trailhead for Email" (a guest-intake demo). That
+> code is preserved on the **`legacy/email-intake`** branch.
 
-- Asks smart follow-up questions before the message is sent
-- Pre-fills a clean subject line
-- Writes a clear, structured message body
-- Identifies missing information
-- Routes the request to the right department
-- Returns structured data for future CRM/helpdesk integrations
+---
 
-The output is a polished, staff-ready email payload — Trailhead does *not* deliver the email itself. The resort's existing form pipeline (mailto, helpdesk webhook, Salesforce web-to-case, etc.) handles delivery.
+## Stack
 
-## Architecture
+Next.js 14 (App Router) · TypeScript (strict) · Tailwind · OpenAI · fast-xml-parser · zod
 
-```
-[ Browser (GH Pages) ]  →→→→  [ Lambda ]  →→→→  [ OpenAI ]
-        public                 holds key        returns JSON
-   getskibots.github.io     (Function URL)
-```
+## Setup
 
-The Lambda exists only to hide the OpenAI key. Everything else — UI, conversation state, copy/send — lives in the browser.
-
-## Repo layout
-
-```
-trailhead/
-├── src/                 ← React frontend (Vite + TS + Tailwind)
-│   ├── components/        ← UI: header, intake form, conversation, email preview
-│   ├── lib/               ← types, API client, mock backend
-│   ├── App.tsx
-│   ├── main.tsx
-│   └── index.css
-├── lambda/              ← OpenAI proxy (Node 20, AWS Lambda)
-│   ├── index.mjs
-│   ├── system-prompt.md
-│   ├── package.json
-│   ├── scripts/build-zip.mjs
-│   └── README.md
-├── .github/workflows/   ← auto-deploy to GH Pages on push to main
-├── public/
-└── index.html
-```
-
-Frontend and Lambda live in the same repo but deploy independently. The Lambda runs as its own AWS function, isolated from `getskibots/sendy`.
-
-## Development
-
-```sh
+```bash
 npm install
-npm run dev          # http://localhost:5173 — uses canned mock responses by default
+cp .env.local.example .env.local   # then add your OPENAI_API_KEY
+npm run dev                          # http://localhost:3000 (or `npm run dev -- --port 5174`)
 ```
 
-To hit the real Lambda locally, set `VITE_TRAILHEAD_API_URL` in `.env.local`:
+Environment variables:
 
-```
-VITE_TRAILHEAD_API_URL=https://<your-function-url>.lambda-url.us-east-1.on.aws/
-```
+| var | required | default | notes |
+|-----|----------|---------|-------|
+| `OPENAI_API_KEY` | ✅ | — | server-side only, never exposed to the client |
+| `OPENAI_MODEL` | | `gpt-4-turbo` | set to `gpt-5` / `gpt-4o` etc. if available |
 
-Visiting any URL with `?mock=1` forces the mock backend regardless of env config — handy for sales-demo fallback when the network is flaky.
+## Usage
+
+1. **Dashboard** (`/`) — lists all runs (one per `bot_id`).
+2. **New ingestion** (`/ingest`) — enter a `bot_id`, resort URL, pick a preset,
+   optionally add resort-specific prompt context, and run.
+3. **Run review** (`/runs/[bot_id]`):
+   - **By Group** — every preset entry with its assigned URL, confidence, and GPT reasoning. Proposed entries highlighted.
+   - **Skipped URLs** — what Trailhead skipped and why.
+   - **Health** — status of every matched URL, broken ones flagged.
+   - **Download Populated Preset** → JSON for omni-odin.
+   - **Re-run Health Check** → re-checks statuses in place.
+
+Confidence guide: **≥85** auto-accept · **60–84** review · **<60** human decision.
+
+## API
+
+| route | method | purpose |
+|-------|--------|---------|
+| `/api/ingest` | POST | run the full pipeline (`{ bot_id, resort_url, preset_id, custom_prompt_additions? }`) |
+| `/api/runs/[bot_id]` | GET | the stored `CategorizationRun` + summary |
+| `/api/runs/[bot_id]/preset` | GET | the `PopulatedPreset` (`?format=download` for a file) |
+| `/api/runs/[bot_id]/health` | POST | re-run the health check |
+| `/api/presets` | GET | list available presets |
+
+All OpenAI calls are server-side only.
+
+## Storage
+
+Prototype-grade: one JSON file per `bot_id` in `data/runs/` (gitignored). No
+database. For production this becomes Supabase or similar — deferred.
+
+## Presets
+
+`src/data/presets/` ships two verticals:
+
+- `ski-resort.json` — production ski preset (18 groups, 7 flows, 3 multi-pass partners)
+- `lodging.json` — second vertical, for testing preset-switching
+
+Add a vertical: drop a JSON file in `src/data/presets/` and register it in
+`src/data/presets/index.ts`. The types in `src/data/preset-types.ts` mirror
+omni-odin's `parent.ts` and **must not be edited** — that's what keeps the
+output drop-in compatible.
+
+## Notes & limits (v1 prototype)
+
+- Runs are capped at **150 URLs** (`MAX_URLS` in `src/lib/trailhead/ingest.ts`).
+  Monarch's sitemap, for example, has ~850 URLs (mostly blog posts); the cap keeps
+  runs and OpenAI cost bounded. Raise it per-need.
+- Bot-protected sites (Cloudflare — Jackson Hole, Vail Resorts) will surface
+  "sitemap not accessible" and stop. A headless-browser fallback is future work.
+- Multi-domain resorts (e.g. `eldora.com` + `store.eldora.com`) only ingest the
+  one origin you point at — run each separately for now.
+- No auth, no scheduled health checks, no direct omni-odin push — all deferred.
 
 ## Deploy
 
-**Frontend** — auto-deploys to GitHub Pages on every push to `main` via `.github/workflows/deploy.yml`. Vite `base` is `/trailhead/` when `GITHUB_ACTIONS=true`, `/` in dev.
-
-**Lambda** — see [`lambda/README.md`](lambda/README.md). Build a zip and upload to AWS.
-
-## Companion to Sendy
-
-Trailhead and [Sendy](https://github.com/getskibots/sendy) bracket the resort's guest conversation:
-
-- **Trailhead** polishes the outgoing question on the guest's way in.
-- **Sendy** parses inbound emails and drafts the staff reply on the way out.
-
-They share a worldview but not infrastructure. Each is its own repo, its own deployment, its own failure domain.
+Target: `trailhead.getskibots.com` on Vercel. Set `OPENAI_API_KEY` (and optionally
+`OPENAI_MODEL`) in the Vercel project env. Note that `data/runs/` is ephemeral on
+Vercel's serverless filesystem — fine for single-session demos; wire durable
+storage before relying on persistence in production.
